@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Veeam Test Task", "Veeam Test Task\Veeam Test Task.csproj", "{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeeamTestTask", "VeeamTestTask\VeeamTestTask.csproj", "{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
