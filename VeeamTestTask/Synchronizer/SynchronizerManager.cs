@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System.Diagnostics;
+using Serilog;
 
 namespace VeeamTestTask.Synchronizer;
 
@@ -24,11 +25,11 @@ public class SynchronizerManager
 
         try
         {
-            Synchronize();
+            await Synchronize();
             while (true)
             {
                 await _syncTimer.WaitForNextTickAsync();
-                Synchronize();
+                await Synchronize();
             }
         }
         catch (OperationCanceledException)
@@ -37,18 +38,37 @@ public class SynchronizerManager
         }
     }
 
-    private void Synchronize()
+    private async Task Synchronize()
     {
         try
         {
-            var synchronizer = new Synchronizer();
-            var changes = synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
-            changes += synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
-            Log.Information($"Folder synchronization completed. {changes} changes.");
+            var stopwatch = Stopwatch.StartNew();
+            var changes = await Synchronize(_config.AsyncFlag);
+            stopwatch.Stop();
+            Log.Information($"Folder synchronization completed. {changes} changes. Elapsed time: {stopwatch.Elapsed}");
         }
         catch (Exception)
         {
             Log.Error("Error during synchronization.");
         }
+    }
+
+    private async Task<int> Synchronize(bool asyncFlag)
+    {
+        var changes = 0;
+        if (asyncFlag)
+        {
+            var synchronizer = new SynchronizerAsync();
+            changes += await synchronizer.SynchronizeDirectoriesAsync(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
+            changes += await synchronizer.SynchronizeDirectoriesAsync(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
+        }
+        else
+        {
+            var synchronizer = new Synchronizer();
+            changes += synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
+            changes += synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
+        }
+
+        return changes;
     }
 }

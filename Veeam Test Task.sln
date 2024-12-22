@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeeamTestTask", "VeeamTestTask\VeeamTestTask.csproj", "{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarking", "Benchmarking\Benchmarking.csproj", "{936F2073-607F-43E5-AD1E-CEBD041D6424}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED1BCA69-80F1-4FEE-B23C-AD90B7378FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{936F2073-607F-43E5-AD1E-CEBD041D6424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{936F2073-607F-43E5-AD1E-CEBD041D6424}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{936F2073-607F-43E5-AD1E-CEBD041D6424}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{936F2073-607F-43E5-AD1E-CEBD041D6424}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -8,21 +8,23 @@ public class Configuration
     public string SourcePath { get; }
     public string ReplicaPath { get; }
     public int SyncIntervalSeconds { get; }
+    public bool AsyncFlag { get; }
     public string LogFilePath { get; }
 
-    private Configuration(string sourcePath, string replicaPath, int syncIntervalSeconds, string logFilePath)
+    private Configuration(string sourcePath, string replicaPath, int syncIntervalSeconds, bool asyncFlag, string logFilePath)
     {
         SourcePath = sourcePath;
         ReplicaPath = replicaPath;
         SyncIntervalSeconds = syncIntervalSeconds;
+        AsyncFlag = asyncFlag;
         LogFilePath = logFilePath;
     }
 
     public static Configuration Load(string[] args)
     {
-        if (args.Length < 4)
+        if (args.Length < 5)
         {
-            throw new ArgumentException("Usage: FolderSynchronizer <sourcePath> <replicaPath> <syncIntervalSeconds> <logFilePath>");
+            throw new ArgumentException("Usage: FolderSynchronizer <sourcePath> <replicaPath> <syncIntervalSeconds> <asyncFlag> <logFilePath>");
         }
 
         var sourcePath = args[0];
@@ -32,12 +34,18 @@ public class Configuration
             throw new DirectoryNotFoundException($"Source folder does not exist: {sourcePath}");
         }
 
+        if (!Directory.Exists(replicaPath))
+        {
+            Directory.CreateDirectory(replicaPath);
+        }
+
         var syncIntervalSeconds = int.Parse(args[2]);
-        var logFilePath = args[3];
+        var asyncFlag = bool.Parse(args[3]);
+        var logFilePath = args[4];
 
         ConfigureLogger(logFilePath);
 
-        return new Configuration(sourcePath, replicaPath, syncIntervalSeconds, logFilePath);
+        return new Configuration(sourcePath, replicaPath, syncIntervalSeconds, asyncFlag, logFilePath);
     }
 
     private static void ConfigureLogger(string logFilePath)
