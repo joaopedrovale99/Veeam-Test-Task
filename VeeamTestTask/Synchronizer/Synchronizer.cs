@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using Serilog;
+using VeeamTestTask.FileUtils;
 
 namespace VeeamTestTask.Synchronizer;
 
@@ -46,7 +47,7 @@ public class Synchronizer
             var targetFile = Path.Combine(targetPath, fileName);
             var fileExists = File.Exists(targetFile);
 
-            if (fileExists && FilesAreIdentical(file, targetFile)) continue;
+            if (fileExists && FileComparator.Md5(file, targetFile)) continue;
 
             if (mode == SynchronizerMode.Create)
                 CopyFile(file, targetFile, fileExists);
@@ -81,16 +82,5 @@ public class Synchronizer
         File.Copy(sourceFile, targetFile, true);
         Log.Information($"{(fileExists ? "Updated" : "Created")} file: {sourceFile}");
         _changes++;
-    }
-
-    /**
-     * MD5 hashing from https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-9.0
-     * Maybe a TryHashData() would be better
-     */
-    private static bool FilesAreIdentical(string file1, string file2)
-    {
-        var hash1 = MD5.HashData(File.ReadAllBytes(file1));
-        var hash2 = MD5.HashData(File.ReadAllBytes(file2));
-        return hash1.SequenceEqual(hash2);
     }
 }

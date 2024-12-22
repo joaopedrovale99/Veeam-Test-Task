@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using Serilog;
+using VeeamTestTask.FileUtils;
 
 namespace VeeamTestTask.Synchronizer;
 
@@ -50,7 +51,7 @@ public class SynchronizerAsync
                 var targetFile = Path.Combine(targetPath, fileName);
                 var fileExists = File.Exists(targetFile);
 
-                if (fileExists && await FilesAreIdenticalAsync(file, targetFile))
+                if (fileExists && await FileComparator.Md5Async(file, targetFile))
                     return;
 
                 if (mode == SynchronizerMode.Create)
@@ -89,24 +90,5 @@ public class SynchronizerAsync
         File.Copy(sourceFile, targetFile, true);
         Log.Information($"{(fileExists ? "Updated" : "Created")} file: {sourceFile}");
         _changes++;
-    }
-
-    /**
-     * MD5 hashing from https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-9.0
-     */
-    private static async Task<bool> FilesAreIdenticalAsync(string file1, string file2)
-    {
-        // TODO: Since this runs asynchronously, it is trying to use 100% CPU and memory. Find a way to improve this if not intended.
-        var fileStream1Task = Task.Run(() => File.ReadAllBytes(file1));
-        var fileStream2Task = Task.Run(() => File.ReadAllBytes(file2));
-
-        await Task.WhenAll(fileStream1Task, fileStream2Task);
-
-        var hash1Task = Task.Run(() => MD5.HashData(fileStream1Task.Result));
-        var hash2Task = Task.Run(() => MD5.HashData(fileStream2Task.Result));
-
-        await Task.WhenAll(hash1Task, hash2Task);
-
-        return hash1Task.Result.SequenceEqual(hash2Task.Result);
     }
 }
