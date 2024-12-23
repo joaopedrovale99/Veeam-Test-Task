@@ -1,22 +1,10 @@
-﻿using System.Security.Cryptography;
-using Serilog;
-using VeeamTestTask.FileUtils;
+﻿using VeeamTestTask.FileUtils;
 
 namespace VeeamTestTask.Synchronizer;
 
-public class Synchronizer
+public class Synchronizer : BaseSynchronizer
 {
-    private int _changes;
-
-    public int SynchronizeDirectories(string sourcePath, string targetPath, SynchronizerMode mode)
-    {
-        RecursiveSynchronizeDirectories(sourcePath, targetPath, mode);
-        var syncChanges = _changes;
-        _changes = 0;
-        return syncChanges;
-    }
-
-    private void RecursiveSynchronizeDirectories(string sourcePath, string targetPath, SynchronizerMode mode)
+    protected override Task RecursiveSynchronizeDirectories(string sourcePath, string targetPath, SynchronizerMode mode)
     {
         SynchronizeFiles(sourcePath, targetPath, mode);
         foreach (var directory in Directory.GetDirectories(sourcePath))
@@ -37,6 +25,8 @@ public class Synchronizer
 
             RecursiveSynchronizeDirectories(directory, targetDirectory, mode);
         }
+
+        return Task.CompletedTask;
     }
 
     private void SynchronizeFiles(string sourcePath, string targetPath, SynchronizerMode mode)
@@ -54,33 +44,5 @@ public class Synchronizer
             else
                 DeleteFile(file);
         }
-    }
-
-    private void DeleteDirectory(string directory)
-    {
-        Directory.Delete(directory, true);
-        Log.Information($"Deleted directory: {directory}");
-        _changes++;
-    }
-
-    private void CreateDirectory(string directory)
-    {
-        Directory.CreateDirectory(directory);
-        Log.Information($"Created directory: {directory}");
-        _changes++;
-    }
-
-    private void DeleteFile(string file)
-    {
-        File.Delete(file);
-        Log.Information($"Deleted file: {file}");
-        _changes++;
-    }
-
-    private void CopyFile(string sourceFile, string targetFile, bool fileExists)
-    {
-        File.Copy(sourceFile, targetFile, true);
-        Log.Information($"{(fileExists ? "Updated" : "Created")} file: {sourceFile}");
-        _changes++;
     }
 }

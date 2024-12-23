@@ -18,15 +18,15 @@ public class FolderSynchronizationBenchmark()
     public async Task SynchronizeDirectoriesAsync()
     {
         var synchronizer = new SynchronizerAsync();
-        await synchronizer.SynchronizeDirectoriesAsync(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
-        await synchronizer.SynchronizeDirectoriesAsync(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
+        await synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
+        await synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
     }
 
     [Benchmark]
-    public void SynchronizeDirectoriesNonAsync()
+    public async Task SynchronizeDirectoriesNonAsync()
     {
         var synchronizer = new Synchronizer();
-        synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
-        synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
+        await synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
+        await synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
     }
 }

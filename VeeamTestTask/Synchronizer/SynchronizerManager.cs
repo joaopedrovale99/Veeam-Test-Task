@@ -55,19 +55,12 @@ public class SynchronizerManager
 
     private async Task<int> Synchronize(bool asyncFlag)
     {
+        BaseSynchronizer synchronizer = asyncFlag ? new SynchronizerAsync() : new Synchronizer();
+
         var changes = 0;
-        if (asyncFlag)
-        {
-            var synchronizer = new SynchronizerAsync();
-            changes += await synchronizer.SynchronizeDirectoriesAsync(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
-            changes += await synchronizer.SynchronizeDirectoriesAsync(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
-        }
-        else
-        {
-            var synchronizer = new Synchronizer();
-            changes += synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
-            changes += synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
-        }
+
+        changes += await synchronizer.SynchronizeDirectories(_config.ReplicaPath, _config.SourcePath, SynchronizerMode.Delete);
+        changes += await synchronizer.SynchronizeDirectories(_config.SourcePath, _config.ReplicaPath, SynchronizerMode.Create);
 
         return changes;
     }

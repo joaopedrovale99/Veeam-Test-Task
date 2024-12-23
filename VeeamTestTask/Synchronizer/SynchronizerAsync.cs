@@ -1,22 +1,11 @@
-﻿using System.Security.Cryptography;
-using Serilog;
+﻿using Serilog;
 using VeeamTestTask.FileUtils;
 
 namespace VeeamTestTask.Synchronizer;
 
-public class SynchronizerAsync
+public class SynchronizerAsync : BaseSynchronizer
 {
-    private int _changes;
-
-    public async Task<int> SynchronizeDirectoriesAsync(string sourcePath, string targetPath, SynchronizerMode mode)
-    {
-        await RecursiveSynchronizeDirectoriesAsync(sourcePath, targetPath, mode);
-        var syncChanges = _changes;
-        _changes = 0;
-        return syncChanges;
-    }
-
-    private async Task RecursiveSynchronizeDirectoriesAsync(string sourcePath, string targetPath, SynchronizerMode mode)
+    protected override async Task RecursiveSynchronizeDirectories(string sourcePath, string targetPath, SynchronizerMode mode)
     {
         var tasks = new List<Task> { SynchronizeFilesAsync(sourcePath, targetPath, mode) };
         foreach (var directory in Directory.GetDirectories(sourcePath))
@@ -35,7 +24,7 @@ public class SynchronizerAsync
                 }
             }
 
-            tasks.Add(RecursiveSynchronizeDirectoriesAsync(directory, targetDirectory, mode));
+            tasks.Add(RecursiveSynchronizeDirectories(directory, targetDirectory, mode));
         }
 
         await Task.WhenAll(tasks);
@@ -62,33 +51,5 @@ public class SynchronizerAsync
         }).ToArray();
 
         await Task.WhenAll(tasks);
-    }
-
-    private void DeleteDirectory(string directory)
-    {
-        Directory.Delete(directory, true);
-        Log.Information($"Deleted directory: {directory}");
-        _changes++;
-    }
-
-    private void CreateDirectory(string directory)
-    {
-        Directory.CreateDirectory(directory);
-        Log.Information($"Created directory: {directory}");
-        _changes++;
-    }
-
-    private void DeleteFile(string file)
-    {
-        File.Delete(file);
-        Log.Information($"Deleted file: {file}");
-        _changes++;
-    }
-
-    private void CopyFile(string sourceFile, string targetFile, bool fileExists)
-    {
-        File.Copy(sourceFile, targetFile, true);
-        Log.Information($"{(fileExists ? "Updated" : "Created")} file: {sourceFile}");
-        _changes++;
     }
 }
