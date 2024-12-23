@@ -34,11 +34,6 @@ public class Configuration
             throw new DirectoryNotFoundException($"Source folder does not exist: {sourcePath}");
         }
 
-        if (!Directory.Exists(replicaPath))
-        {
-            Directory.CreateDirectory(replicaPath);
-        }
-
         var syncIntervalSeconds = int.Parse(args[2]);
         var asyncFlag = bool.Parse(args[3]);
         var logFilePath = args[4];
