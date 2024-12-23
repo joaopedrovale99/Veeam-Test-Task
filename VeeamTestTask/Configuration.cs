@@ -24,7 +24,7 @@ public class Configuration
     {
         if (args.Length < 5)
         {
-            throw new ArgumentException("Usage: FolderSynchronizer <sourcePath> <replicaPath> <syncIntervalSeconds> <asyncFlag> <logFilePath>");
+            throw new ArgumentException("Usage: dotnet run <sourcePath> <replicaPath> <syncIntervalSeconds> <asyncFlag> <logFilePath>");
         }
 
         var sourcePath = args[0];
